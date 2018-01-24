@@ -9,31 +9,28 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper.States;
+import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.data.Stat;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @todo  关于zookeeper的增删改查数据api使用
+ * @author cyfIverson
+ * @date 2018年1月24日
+ */
 public class SimpleZkClient {
 	private static final String connectString = "shizhan01:2181,shizhan02:2181,shizhan03:2181";
 	private static final int sessionTimeout = 2000;
-	
-	private static CountDownLatch connectedSemaphore = new CountDownLatch( 1 );
-	
 	ZooKeeper zkClient = null;
+	private static CountDownLatch connectedSemaphore = new CountDownLatch( 1 );  
 	
-	/**
-	 * @throws IOException
-	 * @throws InterruptedException
-	 */
 	@Before
 	public void init() throws IOException, InterruptedException {
-		new ZooKeeper(connectString, sessionTimeout, new Watcher() {
-			
+		zkClient = new ZooKeeper(connectString, sessionTimeout, new Watcher() {
 			@Override
 			public void process(WatchedEvent event) {
-				
 				//收到事件通知后的回调函数(应该是我们自己的事件处理)
 				System.out.println(event.getType()+"-----"+event.getPath());
 				connectedSemaphore.countDown();
@@ -44,37 +41,41 @@ public class SimpleZkClient {
 				} catch (KeeperException | InterruptedException e) {
 					e.printStackTrace();
 				}
-				
 			}
 		});
-		if(States.CONNECTING==zkClient.getState()) {
-			connectedSemaphore.await(); 		
+		
+		if(States.NOT_CONNECTED==zkClient.getState()) {
+			connectedSemaphore.await();
 		}
 	}
 	
 	/**
-	 * 数据的增删改查
-	 * @throws InterruptedException 
-	 * @throws KeeperException 
+	 * 创建节点
+	 * @throws KeeperException
+	 * @throws InterruptedException
 	 */
-	
-	//创建数据节点
 	@Test
 	public void create() throws KeeperException, InterruptedException {
-		// param1:要创建节点的路径    param2:节点的数据   param3：节点的权限  param4：节点的类型
-		@SuppressWarnings("unused")
-		String nodeCreated = zkClient.create("/eclipse", "helloZk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-		
-		//param2：上传的数据可以是任何类型，但都要转换成byte类型
+		// param1:要创建节点的路径    param2:节点的数据   param3：节点的权限   param4：节点的类型
+		// param2：上传的数据可以是任何类型，但都要转换成byte类型
+		zkClient.create("/eclipse", "helloZk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 	}
 	
-	//判断子节点是否存在
+	/**
+	 * 判断节点是否存在
+	 * @throws KeeperException
+	 * @throws InterruptedException
+	 */
 	@Test
 	public void testExist() throws KeeperException, InterruptedException {
-		Stat stat = zkClient.exists("/uu", true);
+		Stat stat = zkClient.exists("/eclipse", true);
 		System.out.println(stat==null?"not exist":"exist");
 	}
-	//获取子节点的数据
+	
+	/**
+	 * 获取节点数据
+	 * @throws Exception
+	 */
 	@Test
 	public void getChildren() throws Exception {
 		List<String> childern = zkClient.getChildren("/", true);
@@ -85,26 +86,36 @@ public class SimpleZkClient {
 		Thread.sleep(Long.MAX_VALUE);
 	}
 	
-	//获取znode的数据
+	/**
+	 * 获取节点的数据
+	 * @throws KeeperException
+	 * @throws InterruptedException
+	 */
 	@Test
 	public void getData() throws KeeperException, InterruptedException {
 		byte[] data = zkClient.getData("/eclipse", false, null);
 		System.out.println(new String(data));
 	}
 	
-   //删除znode
+   /**
+    * 删除节点
+    * @throws InterruptedException
+    * @throws KeeperException
+    */
 	@Test
 	public void deleteNode() throws InterruptedException, KeeperException {
 		//param2:是指定当前删除的版本，-1表示所有的版本
 		zkClient.delete("/uu", -1);
 	}
 	
-	//修改znode的数据
+	/**
+	 * 修改znode数据
+	 * @throws InterruptedException
+	 * @throws KeeperException
+	 */
 	@Test
 	public void setData() throws InterruptedException, KeeperException {
-		
 		zkClient.setData("/eclipse", "zookerper api learning".getBytes(), -1);
-		
 		byte[] data = zkClient.getData("/eclipse", true, null);
 		System.out.println(new String(data));
    }	

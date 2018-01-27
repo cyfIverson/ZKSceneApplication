@@ -50,7 +50,7 @@ public class SimpleZkClient {
 	}
 	
 	/**
-	 * 创建节点
+	 * 创建znode
 	 * @throws KeeperException
 	 * @throws InterruptedException
 	 */
@@ -62,7 +62,7 @@ public class SimpleZkClient {
 	}
 	
 	/**
-	 * 判断节点是否存在
+	 * 判断znode是否存在
 	 * @throws KeeperException
 	 * @throws InterruptedException
 	 */
@@ -73,7 +73,7 @@ public class SimpleZkClient {
 	}
 	
 	/**
-	 * 获取节点数据
+	 * 获取znode数据
 	 * @throws Exception
 	 */
 	@Test
@@ -87,7 +87,7 @@ public class SimpleZkClient {
 	}
 	
 	/**
-	 * 获取节点的数据
+	 * 获取znode的数据
 	 * @throws KeeperException
 	 * @throws InterruptedException
 	 */
@@ -98,7 +98,7 @@ public class SimpleZkClient {
 	}
 	
    /**
-    * 删除节点
+    * 删除znode
     * @throws InterruptedException
     * @throws KeeperException
     */

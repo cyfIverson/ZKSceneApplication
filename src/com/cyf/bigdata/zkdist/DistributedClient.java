@@ -45,7 +45,7 @@ public class DistributedClient {
 
 
 	public void getServerList() throws KeeperException, InterruptedException {
-		//获取Servers的子节点信息，并对其进行监听
+		//获取Servers的子节点信息，并监听父节点
 		List<String> children = zk.getChildren(parentNode, true);
 		
 		//先创建一个局部的list来放服务器信息
@@ -65,7 +65,6 @@ public class DistributedClient {
 	
 	/**
 	 * 处理业务功能
-	 * 
 	 * @param hostName
 	 * @throws InterruptedException
 	 */

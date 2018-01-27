@@ -59,6 +59,8 @@ public class SimpleZkClient {
 		// param1:要创建节点的路径    param2:节点的数据   param3：节点的权限   param4：节点的类型
 		// param2：上传的数据可以是任何类型，但都要转换成byte类型
 		zkClient.create("/eclipse", "helloZk".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		
+		//上传的数据可以是任何类型，但只要转换为数组就可以
 	}
 	
 	/**
